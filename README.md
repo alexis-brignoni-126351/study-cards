@@ -38,7 +38,7 @@ The AI Upskilling Program moves fast. Sessions cover dense material, assigned re
 
 1. **Clone and install**
    ```bash
-   git clone https://github.com/your-username/study-cards.git
+   git clone https://github.com/alexis-brignoni-126351/study-cards.git
    cd study-cards
    npm install -g @barclayneira/oreilly-mcp
    ```
@@ -260,7 +260,7 @@ Think of chunking like cutting up a textbook for search...
 
 1. Clone repo:
    ```bash
-   git clone https://github.com/your-username/study-cards.git
+   git clone https://github.com/alexis-brignoni-126351/study-cards.git
    cd study-cards
    ```
 

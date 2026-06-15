@@ -29,7 +29,7 @@ Complete installation and configuration for Study Cards.
 ## Step 1: Clone Repository
 
 ```bash
-git clone https://github.com/your-username/study-cards.git
+git clone https://github.com/alexis-brignoni-126351/study-cards.git
 cd study-cards
 ```
 
@@ -335,6 +335,6 @@ If all checks pass, you're ready to start building your card library.
 
 ## Support
 
-- **Issues:** [GitHub Issues](https://github.com/your-username/study-cards/issues)
+- **Issues:** [GitHub Issues](https://github.com/alexis-brignoni-126351/study-cards/issues)
 - **Questions:** Ask in the AIUP cohort channel
 - **Updates:** Pull latest changes with `git pull origin main`
