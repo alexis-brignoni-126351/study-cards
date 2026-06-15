@@ -52,16 +52,11 @@ The framework uses **two** O'Reilly MCP servers:
 
 **Full setup in [SETUP.md](../SETUP.md). Summary:**
 
-### Install
-
-```bash
-npm install -g @barclayneira/oreilly-mcp
-npm install -g @modelcontextprotocol/server-oreilly
-```
-
 ### Configure
 
-Add to `.claude/settings.json`:
+The repo includes the config at `.claude/settings.json` — no separate install step needed. Claude Code downloads and runs the servers automatically via `npx`.
+
+To make it available globally, copy the MCP block to `~/.claude/settings.json`:
 
 ```json
 {
@@ -82,18 +77,7 @@ Add to `.claude/settings.json`:
 
 ### Authenticate
 
-Get your O'Reilly session cookie from browser:
-
-1. Log in to https://learning.oreilly.com/
-2. Open DevTools (F12) → Application → Cookies
-3. Copy `BrowserCookie` or `orm-jwt` value
-4. Set environment variable:
-
-```bash
-export OREILLY_COOKIE="your-cookie-value"
-```
-
-Add to `~/.zshrc` or `~/.bashrc` to persist.
+Just be logged in to O'Reilly in your browser. The MCP server picks up your session automatically — no cookie extraction needed.
 
 ---
 
@@ -249,30 +233,19 @@ The system falls back to manual workflow:
 
 ### "Authentication failed"
 
-**Cause:** O'Reilly cookie expired or missing
+**Cause:** O'Reilly browser session expired
 
 **Fix:**
-1. Log in to O'Reilly in browser
-2. Get fresh cookie from DevTools
-3. Update environment variable:
-   ```bash
-   export OREILLY_COOKIE="new-cookie-value"
-   ```
-4. Restart Claude Code session
-
-**How often do cookies expire?** Usually 30-90 days. You'll know when `/study deep` stops working.
+1. Log out and back in to https://learning.oreilly.com/ in your browser
+2. Restart Claude Code session
 
 ### "MCP server not available"
 
-**Cause:** Server not installed or config incorrect
+**Cause:** Config incorrect or Claude Code needs a restart
 
 **Fix:**
-1. Verify installation:
-   ```bash
-   npm list -g @barclayneira/oreilly-mcp
-   ```
-2. Check `.claude/settings.json` syntax (valid JSON)
-3. Restart Claude Code session
+1. Check `.claude/settings.json` syntax (valid JSON)
+2. Restart Claude Code session
 
 ### "Chapter not found"
 
@@ -368,12 +341,4 @@ Avoids non-cohort results.
 
 ## Security Note
 
-**Your O'Reilly cookie is a credential.** Don't commit it to Git. The cookie gives access to your O'Reilly account.
-
-**Best practice:**
-- Store in environment variable (`OREILLY_COOKIE`)
-- Add to shell profile (~/.zshrc)
-- Never hardcode in settings.json
-- Add `.env` to `.gitignore` if using dotenv
-
-**Cookie scope:** Read-only. Can't modify your account or purchases. But treat it like a password anyway.
+The MCP server reads your O'Reilly session from the browser — no credentials are stored in this repo or passed through environment variables. Don't hardcode any tokens or cookies in `settings.json`.

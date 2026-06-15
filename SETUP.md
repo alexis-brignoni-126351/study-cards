@@ -35,25 +35,13 @@ cd study-cards
 
 ---
 
-## Step 2: Install O'Reilly Read MCP Server
+## Step 2: Configure O'Reilly MCP Servers
 
-**This is required for `/study audit` and `/study deep` to work.** The O'Reilly Read MCP server pulls full chapter text from O'Reilly books.
-
-### Install the server
-
-```bash
-npm install -g @barclayneira/oreilly-mcp
-```
+**This is required for `/study audit` and `/study deep` to work.** The O'Reilly MCP servers pull full chapter text from O'Reilly books. No manual installation needed — Claude Code downloads and runs them automatically via `npx`.
 
 ### Configure in Claude Code
 
-Edit your Claude Code settings file:
-
-**Location:**
-- Project-specific: `study-cards/.claude/settings.json`
-- Global (all projects): `~/.claude/settings.json`
-
-**Add this MCP server config:**
+The repo already includes the config at `.claude/settings.json`. If you want it globally (available in all projects), copy the MCP block to `~/.claude/settings.json`:
 
 ```json
 {
@@ -78,39 +66,14 @@ Edit your Claude Code settings file:
 
 ### Authenticate O'Reilly
 
-The server uses your O'Reilly session cookies for authentication.
+Just be logged in to O'Reilly in your browser. The MCP server picks up your session automatically — no cookie extraction or environment variables needed.
 
-**Steps:**
-
-1. **Log in to O'Reilly** in your browser: https://learning.oreilly.com/
-2. **Get your session cookie:**
-   - Open browser DevTools (F12)
-   - Go to Application > Cookies > https://learning.oreilly.com
-   - Find cookie named `BrowserCookie` or `orm-jwt`
-   - Copy the value
-3. **Set environment variable:**
-
-   **macOS/Linux:**
-   ```bash
-   export OREILLY_COOKIE="your-cookie-value-here"
-   ```
-
-   **Add to your shell profile** (~/.zshrc or ~/.bashrc) to persist:
-   ```bash
-   echo 'export OREILLY_COOKIE="your-cookie-value-here"' >> ~/.zshrc
-   source ~/.zshrc
-   ```
-
-   **Windows (PowerShell):**
-   ```powershell
-   $env:OREILLY_COOKIE = "your-cookie-value-here"
-   ```
-
-   **Note:** Cookies expire. If `/study deep` stops working, refresh your cookie (repeat steps 1-3).
+1. Log in to https://learning.oreilly.com/ in your browser
+2. That's it
 
 ### Test the connection
 
-Start a Claude Code session in this directory and run:
+Start a Claude Code session in this directory:
 
 ```bash
 claude
@@ -124,9 +87,8 @@ Can you search O'Reilly for "Managing AI Projects"?
 If the server is working, Claude will find and list matching books/chapters.
 
 **Troubleshooting:**
-- If you get "MCP server not available": check settings.json syntax and server command
-- If you get "authentication failed": refresh your O'Reilly cookie
-- If chapters won't load: verify `oreilly-read` is installed globally (`npm list -g @barclayneira/oreilly-mcp`)
+- If you get "MCP server not available": check `.claude/settings.json` syntax and restart Claude Code
+- If chapters won't load: make sure you're logged in to O'Reilly in your browser
 
 ---
 
@@ -293,8 +255,8 @@ study-cards/
 
 Before your first real study session, verify:
 
-- [ ] O'Reilly Read MCP server installed (`npm list -g @barclayneira/oreilly-mcp`)
-- [ ] O'Reilly cookie environment variable set (`echo $OREILLY_COOKIE`)
+- [ ] O'Reilly MCP servers configured in `.claude/settings.json`
+- [ ] Logged in to O'Reilly in your browser
 - [ ] Claude Code can search O'Reilly (test in a session)
 - [ ] `/study status` runs without errors
 - [ ] `/study drill --limit 1` runs interactive tutor
@@ -312,7 +274,7 @@ If all checks pass, you're ready to start building your card library.
 
 ### "Authentication failed" when pulling chapters
 
-**Fix:** Your O'Reilly cookie expired. Log in to O'Reilly in browser, get fresh cookie, update `OREILLY_COOKIE` env var.
+**Fix:** Log out and back in to O'Reilly in your browser, then restart your Claude Code session.
 
 ### Cards not showing up in `/study due`
 
