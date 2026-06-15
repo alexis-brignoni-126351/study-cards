@@ -365,15 +365,69 @@ Create these 3 cards? [y/n]
 
 ---
 
-### `/study connect <new-concept> <existing-card>`
+### `/study connect <card1> <card2>`
 
-Link new concept to existing card, trigger revision if it deepens/contradicts.
+Link two cards as related concepts. Updates `## Connects to` in both cards bidirectionally.
+
+**Logic:**
+1. Read both cards
+2. Check if connection already exists in either card's `## Connects to` section
+3. If not, add `[[card2]]` to card1's `## Connects to` and `[[card1]]` to card2's `## Connects to`
+4. Ask: "Does this connection deepen or contradict either card?"
+5. If yes → offer to trigger `/study revise` on the affected card
+
+**Example:**
+```
+/study connect "RAG Chunking Strategy" "Hybrid Search and Re-ranking"
+
+→ Reading both cards...
+→ No existing connection found.
+
+Adding connection in both cards...
+→ RAG Chunking Strategy: added [[Hybrid Search and Re-ranking]]
+→ Hybrid Search and Re-ranking: added [[RAG Chunking Strategy]]
+
+Does this connection deepen either card? [Y/n]
+→ [User: Y]
+→ Which card needs revision? [1] RAG Chunking Strategy [2] Hybrid Search...
+```
 
 ---
 
 ### `/study retire <card-name>`
 
-Deprecate a card that doesn't meet the Card Inclusion Bar.
+Deprecate a card that doesn't meet the Card Inclusion Bar. Moves it out of the active drill rotation but keeps it in the vault.
+
+**Logic:**
+1. Read the card
+2. Ask: "Why retire this card?"
+   - 1. Doesn't meet Card Inclusion Bar (reference-only)
+   - 2. Superseded by a better card
+   - 3. No longer relevant to current learning goals
+3. Set `status: retired` in frontmatter
+4. Move file to `study/retired/`
+5. Remove from any Coverage Map that references it (mark as "Retired")
+6. Update Session Coverage Status table in `INDEX` if card count changes
+7. Log to `study/logs/revision-log.md`
+
+**Example:**
+```
+/study retire "Narrow vs General vs Super AI"
+
+→ Reading card...
+→ Why retire?
+→ 1. Doesn't meet Card Inclusion Bar (reference-only)
+→ 2. Superseded by better card
+→ 3. No longer relevant
+
+[User: 1]
+
+→ Setting status: retired...
+→ Moving to study/retired/...
+→ Removing from Session 1 Coverage Map...
+
+Card retired. No longer in active drill rotation.
+```
 
 ---
 

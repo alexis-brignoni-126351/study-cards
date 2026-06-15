@@ -243,6 +243,10 @@ Think of chunking like cutting up a textbook for search...
 | `/study status` | Learning progress overview + suggested action |
 | `/study revise <card>` | Evolve a card (V1.0 → V2.0) |
 | `/study sync` | Validate consistency, fix Coverage Maps |
+| `/study new <name>` | Create a new card interactively |
+| `/study retire <card>` | Archive a card that's no longer useful |
+| `/study check-prereqs session-N` | Verify prerequisite concepts are at required mastery |
+| `/study connect <card1> <card2>` | Link two cards as related concepts |
 
 **Full command reference:** [GUIDE.md](GUIDE.md)  
 **Extensibility guide:** [docs/extending.md](docs/extending.md)
@@ -264,12 +268,7 @@ Think of chunking like cutting up a textbook for search...
    cd study-cards
    ```
 
-2. Install O'Reilly Read MCP:
-   ```bash
-   npm install -g @barclayneira/oreilly-mcp
-   ```
-
-3. Configure in `.claude/settings.json`:
+2. Configure O'Reilly MCP in `.claude/settings.json` (already included in the repo):
    ```json
    {
      "mcpServers": {
@@ -281,12 +280,9 @@ Think of chunking like cutting up a textbook for search...
    }
    ```
 
-4. Set O'Reilly cookie (get from browser after logging in):
-   ```bash
-   export OREILLY_COOKIE="your-cookie-here"
-   ```
+3. Log in to O'Reilly in your browser — the MCP picks up your session automatically, no extra steps needed.
 
-5. Test:
+4. Test:
    ```bash
    claude
    /study status

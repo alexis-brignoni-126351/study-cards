@@ -482,6 +482,81 @@ Retired cards don't show up in drills but stay in the vault for reference.
 
 ---
 
+## Check Prerequisites Before a Session
+
+**Command:** `/study check-prereqs session-N`
+
+Before starting a new session, verify that prerequisite concepts from earlier sessions are at the required mastery level. Helps you avoid building on shaky foundations.
+
+### How it works
+
+1. Reads the Prerequisites Map from your Study Index
+2. Finds the cards mapped to each prerequisite concept
+3. Reports mastery status for each — met (`known`) vs needs refresh (`learning` or `new`)
+4. Offers to drill prerequisite cards before you move on
+
+### Example
+
+```
+/study check-prereqs session-2
+
+→ Reading Prerequisites Map...
+→ Session 2 requires: RAG Chunking Strategy, Embedding Types, Bias-Variance Tradeoff
+
+→ RAG Chunking Strategy — mastery: known ✓
+→ Embedding Types — mastery: learning ⚠ (due for review)
+→ Bias-Variance Tradeoff — mastery: new ✗ (not drilled yet)
+
+2 prerequisites need attention before Session 2.
+Drill them now? [Y/n]
+```
+
+### When to use it
+
+- Before every new session (especially later ones that build on earlier material)
+- When you've been away for a few weeks and concepts may have regressed
+- As part of your weekly `/study sync` habit
+
+---
+
+## Connect Related Cards
+
+**Command:** `/study connect <card-name> <other-card-name>`
+
+Link two cards as related concepts. Updates the `## Connects to` section in both cards so they reference each other during drills.
+
+### How it works
+
+1. Reads both cards
+2. Checks if a connection already exists
+3. Adds the wikilink to `## Connects to` in each card
+4. If the new connection deepens or contradicts one of the cards, offers to trigger a revision
+
+### Example
+
+```
+/study connect "RAG Chunking Strategy" "Hybrid Search and Re-ranking"
+
+→ Reading RAG Chunking Strategy...
+→ Reading Hybrid Search and Re-ranking...
+→ No existing connection found.
+
+Adding connection in both cards...
+→ RAG Chunking Strategy: added [[Hybrid Search and Re-ranking]]
+→ Hybrid Search and Re-ranking: added [[RAG Chunking Strategy]]
+
+Does this connection deepen either card? (e.g., chunking strategy affects hybrid retrieval quality)
+Trigger a revision? [Y/n]
+```
+
+### When to use it
+
+- After a deep-dive reveals a concept that reinforces or qualifies an existing card
+- When you notice during a drill that two cards are really about the same decision
+- When a later session recontextualizes a concept from an earlier one
+
+---
+
 ## Housekeeping: Sync Everything
 
 **Command:** `/study sync`
@@ -628,8 +703,8 @@ Ensures you're ready for new material.
 ### `/study audit` can't find O'Reilly chapters
 
 **Fix:**
-- Verify O'Reilly Read MCP is configured (see SETUP.md)
-- Check `OREILLY_COOKIE` environment variable is set
+- Verify O'Reilly Read MCP is configured in `.claude/settings.json` (see SETUP.md)
+- Make sure you're logged in to O'Reilly in your browser
 - Try searching manually: "Can you search O'Reilly for X?"
 
 ### Coverage Map out of sync
