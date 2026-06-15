@@ -1,0 +1,43 @@
+# Environment
+.env
+.env.local
+
+# Logs (keep structure, ignore content)
+study/logs/*.md
+!study/logs/.gitkeep
+
+# Deep-dives (optional saved chapters - keep local)
+study/deep-dives/
+!study/deep-dives/.gitkeep
+
+# Sources (ingested content - keep local)
+study/sources/
+!study/sources/.gitkeep
+
+# Retired cards (keep local)
+study/retired/
+
+# Personal study content (everyone's cards are different)
+# Uncomment if you want to keep your cards private:
+# study/concepts/*.md
+# !study/concepts/README.md
+# study/Study Index.md
+
+# Session notes (keep local if personal)
+# study/sessions/*.md
+# !study/sessions/README.md
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node (for O'Reilly MCP)
+node_modules/
+package-lock.json

@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "oreilly-read": {
+      "command": "npx",
+      "args": ["-y", "@barclayneira/oreilly-mcp"],
+      "description": "O'Reilly full chapter text reader (required for /study audit and /study deep)"
+    },
+    "oreilly": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-oreilly"],
+      "description": "O'Reilly official search (fallback for discovery)"
+    }
+  }
+}
