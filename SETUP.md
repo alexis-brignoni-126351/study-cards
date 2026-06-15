@@ -171,7 +171,31 @@ Edit `study/Study Index.md` and customize:
 
 ---
 
-## Step 5: First Study Session
+## Step 5: (Optional) Configure Book Filters
+
+If you want to limit O'Reilly searches to specific books (like program-assigned texts), create a config file:
+
+```bash
+cp .claude/study-config.json.example .claude/study-config.json
+```
+
+Edit `.claude/study-config.json`:
+```json
+{
+  "oreilly_books": [
+    "Managing AI Projects",
+    "Generative AI on Microsoft Azure"
+  ]
+}
+```
+
+Now `/study deep` and `/study audit` only search these books.
+
+**Skip this if you want to search the entire O'Reilly catalog.**
+
+---
+
+## Step 6: First Study Session
 
 Test the system with the example cards:
 

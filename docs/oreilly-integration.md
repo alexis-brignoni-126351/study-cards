@@ -137,19 +137,69 @@ When you run `/study audit session-N`, the system:
 
 ---
 
+## Filtering Book Searches (Optional)
+
+By default, `/study deep` and `/study audit` search the **entire O'Reilly catalog**. You can limit searches to specific books.
+
+### Three ways to filter:
+
+**1. Config file** (applies to all searches):
+
+Create `.claude/study-config.json` in repo root:
+```json
+{
+  "oreilly_books": [
+    "Managing AI Projects",
+    "Generative AI on Microsoft Azure"
+  ]
+}
+```
+
+Or use URNs:
+```json
+{
+  "oreilly_books": [
+    "urn:orm:book:9798341641006",
+    "urn:orm:book:9798341623279"
+  ]
+}
+```
+
+**2. Command flag** (one-time override):
+```bash
+/study deep "RAG" --books "Managing AI Projects,Generative AI on Azure"
+```
+
+**3. No filter** (default):
+No config + no flag = searches everything.
+
+**Override config temporarily:**
+```bash
+/study deep "RAG" --all-books   # Ignores config, searches entire catalog
+```
+
+---
+
 ## How `/study deep` Uses O'Reilly
 
 When you run `/study deep <topic>`, the system:
 
-1. **Searches O'Reilly catalog** via `oreilly` MCP:
+1. **Checks for book filters:**
+   - Reads `.claude/study-config.json` (if exists)
+   - Or uses `--books` flag
+   - Or searches entire catalog (default)
+
+2. **Searches O'Reilly catalog** via `oreilly` MCP:
    
    ```
    Tool: search_oreilly_content
    Input: { query: "RAG retrieval strategies" }
    Output: [list of matching chapters with metadata]
    ```
+   
+   Filters results to configured books if specified.
 
-2. **Shows you matching chapters:**
+3. **Shows you matching chapters:**
    
    ```
    Found 3 chapters:

@@ -258,13 +258,40 @@ Use this when you want to go deeper on a topic beyond what the session covered.
 
 ### How it works
 
-1. Searches O'Reilly catalog for the topic
+1. Searches O'Reilly catalog for the topic (entire catalog or filtered books)
 2. Shows matching chapters
 3. You select which chapter to read
 4. Pulls full chapter text (via `oreilly-read` MCP)
 5. Displays content (or saves to `study/deep-dives/`)
 6. Asks if any concepts are worth cardifying
 7. Creates cards if you say yes
+
+### Filtering searches (optional)
+
+By default, searches the entire O'Reilly catalog. You can limit to specific books:
+
+**Option 1: Config file** (applies to all searches)
+
+Create `.claude/study-config.json` in the repo root:
+```json
+{
+  "oreilly_books": [
+    "Managing AI Projects",
+    "Generative AI on Microsoft Azure"
+  ]
+}
+```
+
+Now all `/study deep` searches only show results from these books.
+
+**Option 2: Command flag** (one-time filter)
+```bash
+/study deep "RAG" --books "Managing AI Projects"
+```
+
+**Option 3: No filter** (default)
+
+Don't create config, don't use flag → searches everything.
 
 ### Example
 
@@ -303,9 +330,10 @@ Added to Session 2 Coverage Map as "Post-Session Addition"
 ### Flags
 
 ```bash
-/study deep <topic> --save         # Save chapter to study/deep-dives/
-/study deep <topic> --no-cards     # Just read, don't create cards
-/study deep <topic> --book <urn>   # Limit to specific book
+/study deep <topic> --save                    # Save chapter to study/deep-dives/
+/study deep <topic> --no-cards                # Just read, don't create cards
+/study deep <topic> --books "Book1,Book2"     # Limit to specific books
+/study deep <topic> --all-books               # Ignore config, search everything
 ```
 
 ---

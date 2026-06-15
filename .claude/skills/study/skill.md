@@ -199,19 +199,58 @@ Guided card evolution workflow. Updates card based on trigger (post-drill / late
 Deep-dive on a topic using O'Reilly content. Pull chapter text, surface related material, optionally create cards.
 
 **Logic:**
-1. Search O'Reilly catalog via `oreilly` MCP: `search_oreilly_content`
-2. Show matching chapters with descriptions
-3. User selects which to read
-4. Pull full chapter content via `oreilly-read` MCP: `read_chapter`
-5. Display content (or save to `study/deep-dives/<topic>-<date>.md`)
-6. Ask: "Did this reveal any concepts worth cardifying?"
-7. If yes: mini-audit against Card Inclusion Bar, create cards (V1.0, mastery: new)
-8. Wire new cards into originating session's Coverage Map as "Post-Session Addition"
+1. **Check for book filters:**
+   - Read `.claude/study-config.json` if exists (get `oreilly_books` array)
+   - Or use `--books` flag value
+   - If neither, search entire catalog
+2. Search O'Reilly catalog via `oreilly` MCP: `search_oreilly_content`
+   - Filter results to configured books if specified
+3. Show matching chapters with descriptions
+4. User selects which to read
+5. Pull full chapter content via `oreilly-read` MCP: `read_chapter`
+6. Display content (or save to `study/deep-dives/<topic>-<date>.md`)
+7. Ask: "Did this reveal any concepts worth cardifying?"
+8. If yes: mini-audit against Card Inclusion Bar, create cards (V1.0, mastery: new)
+9. Wire new cards into originating session's Coverage Map as "Post-Session Addition"
 
 **Flags:**
-- `--book <urn>` - limit to specific book
+- `--books <list>` - limit search to these books (comma-separated titles or URNs)
+- `--book <urn>` - limit to specific book URN (legacy, same as --books)
 - `--save` - auto-save chapter to deep-dives/
 - `--no-cards` - just pull content, don't offer cards
+- `--all-books` - ignore config, search entire catalog
+
+**Book filtering (optional):**
+
+You can limit O'Reilly searches to specific books in three ways:
+
+**1. Config file** (applies to all searches):
+Create `.claude/study-config.json` in repo root:
+```json
+{
+  "oreilly_books": [
+    "Managing AI Projects",
+    "Generative AI on Microsoft Azure"
+  ]
+}
+```
+Or use URNs:
+```json
+{
+  "oreilly_books": [
+    "urn:orm:book:9798341641006",
+    "urn:orm:book:9798341623279"
+  ]
+}
+```
+
+**2. Command flag** (one-time override):
+```
+/study deep "RAG" --books "Managing AI Projects,Generative AI on Azure"
+```
+
+**3. No filtering** (default):
+Don't create config, don't use flag → searches entire O'Reilly catalog.
 
 ---
 

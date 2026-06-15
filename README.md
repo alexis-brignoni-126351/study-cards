@@ -62,6 +62,17 @@ The AI Upskilling Program moves fast. Sessions cover dense material, assigned re
 
 ## Features
 
+### Book Filtering (Optional)
+
+Limit O'Reilly searches to specific books instead of the entire catalog.
+
+**Three ways:**
+1. **Config file** - create `.claude/study-config.json` with your book list (persistent)
+2. **Command flag** - `--books "Book1,Book2"` (one-time)
+3. **No filter** - search everything (default)
+
+See [README-BOOK-FILTERING.md](README-BOOK-FILTERING.md) for complete guide.
+
 ### Automatic Spaced Repetition
 
 Cards track `mastery` level (new / learning / known) and calculate next drill date automatically:
