@@ -4,10 +4,48 @@ How to use Study Cards for active learning with spaced repetition.
 
 ---
 
+## Personalize Your Experience
+
+**Run this once before anything else:**
+
+```
+/study setup
+```
+
+This takes 2 minutes. Everyone in the AIUP cohort is learning the same material, but you're not all doing the same job or building toward the same career. A software engineer, a product manager, and a data analyst need the same concepts framed completely differently to make them stick.
+
+The system asks a few questions about your background and goals, then writes a learner profile to `.claude/study-config.json`. From that point on:
+
+- **Questions are framed for your context** — not generic textbook prompts. Same concept, different angle depending on who you are and what you're building toward.
+- **Feedback connects to real stakes** — the tutor ties gaps back to what they mean in your specific situation, not abstract theory.
+- **Card creation gets smarter** — when `/study audit` or `/study deep` writes new cards, the Q is grounded in scenarios relevant to your role and ambitions.
+
+You can re-run `/study setup` anytime your context changes — different job, new ambitions, midway through the program and your goals have shifted.
+
+---
+
+## Session Modes
+
+At the start of every drill, the system asks:
+
+```
+How do you want to drill today?
+[1] Deep — open-ended questions, full answers, rich feedback
+[2] Rapid — quick-fire, short answers, move fast
+```
+
+**Deep mode** — for when you have 20-30 minutes and want to really work through concepts. Expects articulated answers, gives rich feedback, pushes back on gaps, connects to adjacent ideas. Good for new or tricky cards.
+
+**Rapid mode** — for a 5-10 minute morning drill. Tighter questions, bullet-point answers accepted, one key insight per card, no follow-ups unless you ask. Good for reinforcing cards you already mostly know.
+
+Choose based on your energy and time, not the material. The same card drilled in Rapid mode on Monday and Deep mode on Wednesday gives you two different kinds of practice.
+
+---
+
 ## The Complete Workflow
 
 ```
-Session → Coverage Audit → Create Cards → Drill → Deep-Dive → Revise → Repeat
+Setup → Session → Coverage Audit → Create Cards → Drill → Deep-Dive → Revise → Repeat
 ```
 
 **Weekly cycle:**
@@ -27,11 +65,11 @@ This is your daily active-recall practice. The system calculates which cards are
 
 ### How it works
 
-1. System finds cards due today (based on `mastery` level and `last-drilled` date)
-2. Presents one card at a time: shows the Question
-3. You attempt to answer (out loud or in your head)
-4. System reveals the Answer
-5. You self-grade: correct / incorrect / partial
+1. Asks whether you want Deep or Rapid mode for this session
+2. System finds cards due today (based on `mastery` level and `last-drilled` date)
+3. Presents one card at a time, framed for your learner profile and chosen mode
+4. You attempt to answer
+5. System gives feedback and scores
 6. System updates card mastery and schedules next drill
 
 ### Example session

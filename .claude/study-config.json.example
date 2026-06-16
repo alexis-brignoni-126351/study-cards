@@ -2,5 +2,12 @@
   "oreilly_books": [
     "Managing AI Projects",
     "Generative AI on Microsoft Azure"
-  ]
+  ],
+  "learner": {
+    "role": "Your current role (e.g. software engineer, product manager)",
+    "ai_background": "Your AI/ML experience level (e.g. familiar with concepts, limited hands-on)",
+    "learning_goal": "What you want to get out of this (e.g. apply AI in my current role)",
+    "framing_preference": "How you want concepts framed (e.g. practical — connect to real systems and tradeoffs)",
+    "avoid": "What you don't want from the tutor (e.g. pure theory without application)"
+  }
 }

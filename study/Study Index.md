@@ -16,6 +16,7 @@ Your active-recall learning environment. This is where you **drill it until it s
 
 | Command | What it does |
 |---------|--------------|
+| `/study setup` | One-time learner profile setup — run before your first drill |
 | `/study` | Quiz me on the concept cards (active recall). Tracks mastery per card. |
 | `/study new` | Drill only cards not yet seen (`mastery: new`). |
 | `/study audit session-N` | Find concepts in session material that cross the Card Inclusion Bar and create cards. |

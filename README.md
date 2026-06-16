@@ -12,6 +12,8 @@ A flexible learning workflow that turns passive reading into active mastery:
 
 - **Spaced repetition** - automatic scheduling (drill new concepts in 2 days, learning in 7 days, known in 30 days)
 - **Interactive tutor** - not flashcards, actual teaching (re-ask differently, explain simpler, connect to practice)
+- **Session modes** - Deep (open-ended, rich feedback) or Rapid (quick-fire, tight feedback) — chosen at the start of every drill
+- **Learner profile** - run `/study setup` once to tell the system your background and goals; questions and feedback adapt to your context from that point on
 - **Card versioning** - cards improve as you learn (V1.0 post-session → V2.0 post-application)
 - **Coverage audits** - automatically find concepts in session material worth cardifying
 - **O'Reilly integration** - pull full chapter text, create cards from deep-dives
@@ -24,11 +26,13 @@ A flexible learning workflow that turns passive reading into active mastery:
 
 ## Why This Exists
 
-The AI Upskilling Program moves fast. Sessions cover dense material, assigned readings go deep, and you're expected to apply it immediately in a capstone.
+The NBS AI Upskilling Program (June 2026) runs 9 sessions across 9 weeks. Each Friday session covers dense material, assigned O'Reilly readings go deeper, and by Session 9 you're presenting a capstone to leadership.
 
-**The problem:** Passive reading doesn't stick. You finish a chapter, feel like you learned, then can't recall it a week later when you need it.
+**The problem:** That pace leaves no room for passive reading. You finish a chapter, feel like you understood it, then can't recall it two weeks later when the capstone needs it.
 
-**This framework:** Active recall with spaced repetition. You create cards for concepts that matter (not everything), drill them until they stick, and revise them based on real experience. By the time you hit the capstone, the concepts are ready to use.
+**This framework:** Active recall with spaced repetition. You build cards for concepts that actually matter — mental models, failure modes, decision frameworks — drill them on a schedule, and revise them as your understanding deepens. The goal isn't to memorize everything. It's to have the right concepts ready when the capstone and your career actually need them.
+
+Everyone in the cohort comes from a different job function and has different ambitions. The learner profile (`/study setup`) accounts for that — questions and feedback adapt to your specific context, not a generic "AI student" profile.
 
 ---
 
@@ -36,21 +40,24 @@ The AI Upskilling Program moves fast. Sessions cover dense material, assigned re
 
 **3 steps to first drill session:**
 
-1. **Clone and install**
+1. **Clone and configure**
    ```bash
    git clone https://github.com/alexis-brignoni-126351/study-cards.git
    cd study-cards
-   npm install -g @barclayneira/oreilly-mcp
    ```
+   Configure O'Reilly MCP in `.claude/settings.json` (already included) and log in to O'Reilly in your browser. See [SETUP.md](SETUP.md).
 
-2. **Configure O'Reilly MCP**  
-   See [SETUP.md](SETUP.md) for complete instructions (10 minutes)
-
-3. **Run first drill**
+2. **Set up your learner profile**
    ```bash
    claude
    ```
    Then inside Claude Code:
+   ```
+   /study setup
+   ```
+   Takes 2 minutes. Tells the system your background and goals so questions and feedback adapt to your context.
+
+3. **Run your first drill**
    ```
    /study drill --limit 1
    ```
@@ -235,7 +242,8 @@ Think of chunking like cutting up a textbook for search...
 
 | Command | What it does |
 |---------|--------------|
-| `/study` | Drill cards due today (auto-scheduled) |
+| `/study setup` | One-time learner profile setup — personalizes questions and feedback |
+| `/study` | Drill cards due today — prompts for Deep or Rapid mode first |
 | `/study audit session-N` | Find gaps in session material, create cards |
 | `/study ingest <mode>` | Ingest transcript, article, PDF (paste text or file path) |
 | `/study deep <topic>` | Pull O'Reilly chapter, create cards from it |

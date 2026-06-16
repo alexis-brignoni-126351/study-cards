@@ -14,6 +14,7 @@ STUDY_DIR  = study/                  # Top-level study directory
 CARDS_DIR  = study/concepts/         # Concept cards
 INDEX      = study/Study Index.md    # Master index
 SESSIONS   = study/sessions/         # Session notes (optional)
+CONFIG     = .claude/study-config.json  # Optional learner profile + book filters
 ```
 
 **Default detection logic:**
@@ -25,17 +26,85 @@ SESSIONS   = study/sessions/         # Session notes (optional)
 - O'Reilly Read MCP server configured (see SETUP.md for installation)
 - Study directory initialized with basic structure
 
+**Learner profile (optional):**
+If `.claude/study-config.json` exists and has a `learner` block, all subcommands read it to personalize question framing, feedback tone, and card creation. See `.claude/study-config.json.example` for the format.
+
 ---
 
 ## Subcommands
+
+### `/study setup`
+
+One-time learner profile setup. Asks structured questions and writes `.claude/study-config.json`. Run before first drill session; re-run anytime context changes.
+
+**Logic:**
+1. Check if `.claude/study-config.json` already exists — if so, ask "Update existing profile or start fresh?"
+2. Ask the following questions in sequence, presenting options where possible:
+
+   **Q1: What's your current role?**
+   - Software / data engineer
+   - Product manager or analyst
+   - Technical lead or architect
+   - Student or career changer
+   - Other (type it)
+
+   **Q2: What's your technical background with AI/ML?**
+   - New to it — building foundational understanding
+   - Familiar with concepts, limited hands-on
+   - Have built or shipped AI features
+   - Working in AI/ML professionally
+
+   **Q3: What's your primary learning goal?**
+   - Perform well in technical interviews
+   - Apply AI concepts in my current role
+   - Build toward an AI engineering career
+   - Lead or evaluate AI projects and teams
+   - General literacy and fluency
+
+   **Q4: How do you want concepts framed?**
+   - Practical — connect to real systems, tradeoffs, and decisions
+   - Conceptual — build deep mental models first, application second
+   - Both — alternate depending on the concept
+
+   **Q5: Anything you want the tutor to avoid?**
+   - Pure theory without application
+   - Over-simplified analogies
+   - Excessive jargon without explanation
+   - Nothing — no preference
+
+3. Write responses to `.claude/study-config.json` under a `learner` key:
+   ```json
+   {
+     "learner": {
+       "role": "...",
+       "ai_background": "...",
+       "learning_goal": "...",
+       "framing_preference": "...",
+       "avoid": "..."
+     }
+   }
+   ```
+   Preserve any existing `oreilly_books` config if updating.
+
+4. Confirm: "Profile saved. Your drills and card creation will now adapt to your context. Run `/study` to start drilling."
+
+---
 
 ### `/study` or `/study drill` (default)
 
 Active recall quiz on cards **due today** based on spaced repetition schedule.
 
 **Logic:**
-1. Read all cards in `CARDS_DIR`, parse frontmatter
-2. Calculate `next-due` for each card:
+1. Read `.claude/study-config.json` if it exists — load `learner` profile and note it for the session
+2. **Ask session mode:**
+   ```
+   How do you want to drill today?
+   [1] Deep — open-ended questions, full answers, rich feedback
+   [2] Rapid — quick-fire, short answers, move fast
+   ```
+   Default to Deep if no response. Carry the chosen mode through the entire session.
+3. Read all cards in `CARDS_DIR`, parse frontmatter
+4. Calculate `next-due` for each card:
    - If no `last-drilled:` - due now
    - If `mastery: new` - `last-drilled + 2 days`
    - If `mastery: learning` - `last-drilled + 7 days`
@@ -79,8 +148,17 @@ Active recall quiz on cards **due today** based on spaced repetition schedule.
 - Lower the floor when stuck (on-ramp, analogies)
 - Productive repetition (re-ask differently after mistakes)
 - Feynman explain-backs
-- Connect to real-world applications
 - Desirable difficulty (let them struggle a bit, then help)
+
+**Session mode behavior:**
+- **Deep mode:** pose the full card question as-is, expect articulated answers, give rich feedback with follow-ups, push back on gaps, connect to adjacent concepts
+- **Rapid mode:** distill the question to its core, accept bullet-point answers, give tight feedback (correct/incorrect + one key insight), no follow-ups unless user asks, move immediately to next card
+
+**Learner profile behavior (if loaded):**
+- Before posing each question, add one sentence: "Here's why this matters for you: [connect concept to learner's role/aspirations]"
+- Frame feedback through their lens — connect gaps to real stakes in their context
+- When writing card Q/A (audit, deep, ingest): ground the question in a realistic scenario relevant to the learner's role, not a generic textbook prompt
+- Respect `avoid` field — don't give pure theory responses if learner wants application focus
 
 ---
 
@@ -104,6 +182,7 @@ Coverage audit: find concepts in completed session material that cross the Card 
 9. Create cards with:
    - Frontmatter: `type: concept-card`, `deck: session-N`, `mastery: new`, `created: <date>`, `last-revised: <date>`, `version: 1.0`, `status: active`
    - Body: Q/A/On-ramp/Common pitfalls/Connects to/Source
+   - **If learner profile loaded:** frame the Q as a realistic scenario grounded in their role/context, not a generic definition prompt. The A should emphasize the production so-what and tradeoffs relevant to their lens.
 10. **Auto-update Coverage Map** in session note:
     - Add new cards to "Post-Session Additions:" section (or create it)
     - Update audit timestamp: `**Audit:** ✅ Complete (YYYY-MM-DD) - X cards created, Y gaps found`
