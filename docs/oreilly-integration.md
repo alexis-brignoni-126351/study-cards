@@ -14,37 +14,24 @@ The AI Upskilling Program assigns O'Reilly readings alongside sessions. These re
 
 ---
 
-## Two MCP Servers
+## The MCP Server
 
-The framework uses **two** O'Reilly MCP servers:
-
-### 1. `oreilly-read` (Primary)
+The framework uses one O'Reilly MCP server:
 
 **Repository:** [barclayneira/oreilly-mcp](https://github.com/barclayneira/oreilly-mcp)  
-**What it does:** Pulls **full chapter text** from O'Reilly books  
+**What it does:** Searches the catalog **and** pulls full chapter text  
 **Tools:**
+- `search_content` - search books, chapters, and articles by query, format, or topic
+- `get_book_info` - book metadata, description, and chapter list
+- `get_table_of_contents` - detailed chapter hierarchy for a book
 - `read_chapter` - returns complete chapter content
-- `get_table_of_contents` - lists book chapters
-- `get_book_info` - book metadata
+- `get_annotations` - your personal O'Reilly highlights and notes
 
 **Used by:**
 - `/study audit` - pulls assigned chapters to find concepts
-- `/study deep` - pulls chapters for deep-dives
+- `/study deep` - searches for chapters, then pulls the one you pick
 
-**Critical:** This is the server that makes coverage audits work. Without it, you can't pull chapter text.
-
-### 2. `oreilly` (Official, Fallback)
-
-**Repository:** [@modelcontextprotocol/server-oreilly](https://github.com/modelcontextprotocol/servers/tree/main/src/oreilly)  
-**What it does:** **Discovery only** - searches catalog, returns metadata  
-**Tools:**
-- `search_oreilly_content` - search books/chapters/videos
-
-**Used by:**
-- `/study deep` - find chapters matching a topic
-- Fallback when `oreilly-read` unavailable
-
-**Limitation:** Can't pull chapter text. Returns URLs and metadata only.
+**Critical:** `read_chapter` is what makes coverage audits work. Without the server, you're back to manual copy-paste.
 
 ---
 
@@ -52,32 +39,19 @@ The framework uses **two** O'Reilly MCP servers:
 
 **Full setup in [SETUP.md](../SETUP.md). Summary:**
 
-### Configure
+1. Get your O'Reilly API token from https://learning.oreilly.com/apidocs/mcp/content/ (log in first)
+2. Clone the server, install dependencies, and register it with Claude Code:
 
-The repo includes the config at `.claude/settings.json` — no separate install step needed. Claude Code downloads and runs the servers automatically via `npx`.
+```bash
+git clone https://github.com/barclayneira/oreilly-mcp.git
+cd oreilly-mcp
+uv sync
 
-To make it available globally, copy the MCP block to `~/.claude/settings.json`:
-
-```json
-{
-  "mcpServers": {
-    "oreilly-read": {
-      "command": "npx",
-      "args": ["-y", "@barclayneira/oreilly-mcp"],
-      "description": "O'Reilly full chapter text reader"
-    },
-    "oreilly": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-oreilly"],
-      "description": "O'Reilly official search (fallback)"
-    }
-  }
-}
+claude mcp add oreilly \
+  -s user \
+  -e ORM_JWT=YOUR_TOKEN_HERE \
+  -- "$(pwd)/.venv/bin/python" "$(pwd)/stdio_server.py"
 ```
-
-### Authenticate
-
-Just be logged in to O'Reilly in your browser. The MCP server picks up your session automatically — no cookie extraction needed.
 
 ---
 
@@ -99,7 +73,7 @@ When you run `/study audit session-N`, the system:
    urn:orm:book:9798341641006 - Ch. 2
    ```
 
-3. **Pulls full chapter text** via `oreilly-read` MCP:
+3. **Pulls full chapter text** via the `read_chapter` tool:
    
    ```
    Tool: read_chapter
@@ -173,10 +147,10 @@ When you run `/study deep <topic>`, the system:
    - Or uses `--books` flag
    - Or searches entire catalog (default)
 
-2. **Searches O'Reilly catalog** via `oreilly` MCP:
+2. **Searches O'Reilly catalog** via the `search_content` tool:
    
    ```
-   Tool: search_oreilly_content
+   Tool: search_content
    Input: { query: "RAG retrieval strategies" }
    Output: [list of matching chapters with metadata]
    ```
@@ -192,9 +166,9 @@ When you run `/study deep <topic>`, the system:
    3. LangChain in Practice, Ch. 4 - Retrieval
    ```
 
-3. **You select which chapter to read**
+4. **You select which chapter to read**
 
-4. **Pulls full chapter text** via `oreilly-read` MCP:
+5. **Pulls full chapter text** via the `read_chapter` tool:
    
    ```
    Tool: read_chapter
@@ -202,11 +176,11 @@ When you run `/study deep <topic>`, the system:
    Output: [full chapter text]
    ```
 
-5. **Displays content** (or saves to `study/deep-dives/`)
+6. **Displays content** (or saves to `study/deep-dives/`)
 
-6. **Asks if any concepts are worth cardifying**
+7. **Asks if any concepts are worth cardifying**
 
-7. **Creates cards** if you say yes
+8. **Creates cards** if you say yes
 
 **Result:** Turn curiosity into drillable concepts in one step.
 
@@ -214,18 +188,17 @@ When you run `/study deep <topic>`, the system:
 
 ## Fallback Strategy
 
-**What if `oreilly-read` is unavailable?**
+**What if the MCP server is unavailable?**
 
-The system falls back to manual workflow:
+The system falls back to a manual workflow:
 
-1. Uses `oreilly` to find the chapter (discovery only)
-2. Shows you the URL
-3. Prompts: "Read this chapter in O'Reilly and paste key concepts here"
-4. You paste content
-5. System reviews against Card Inclusion Bar
-6. Creates cards
+1. Helps you locate the chapter (title, book, URL if known)
+2. Prompts: "Read this chapter in O'Reilly and paste key concepts here"
+3. You paste content
+4. System reviews against Card Inclusion Bar
+5. Creates cards
 
-**Works, but slower.** Prefer `oreilly-read` when available.
+**Works, but slower.** Prefer the MCP server when available.
 
 ---
 
@@ -233,18 +206,19 @@ The system falls back to manual workflow:
 
 ### "Authentication failed"
 
-**Cause:** O'Reilly browser session expired
+**Cause:** O'Reilly API token expired
 
 **Fix:**
-1. Log out and back in to https://learning.oreilly.com/ in your browser
-2. Restart Claude Code session
+1. Get a fresh token from https://learning.oreilly.com/apidocs/mcp/content/
+2. Re-run `claude mcp add oreilly` with the new `ORM_JWT` value
+3. Restart Claude Code session
 
 ### "MCP server not available"
 
-**Cause:** Config incorrect or Claude Code needs a restart
+**Cause:** Server not registered or Claude Code needs a restart
 
 **Fix:**
-1. Check `.claude/settings.json` syntax (valid JSON)
+1. Run `claude mcp list` and confirm `oreilly` is listed and healthy
 2. Restart Claude Code session
 
 ### "Chapter not found"
@@ -333,7 +307,7 @@ Avoids non-cohort results.
 ## References
 
 - [SETUP.md](../SETUP.md) - Complete installation instructions
-- [barclayneira/oreilly-mcp](https://github.com/barclayneira/oreilly-mcp) - O'Reilly Read MCP repo
+- [barclayneira/oreilly-mcp](https://github.com/barclayneira/oreilly-mcp) - O'Reilly MCP server repo
 - `/study audit` - Coverage audits with chapter pulling
 - `/study deep` - Deep-dives with chapter pulling
 
@@ -341,4 +315,4 @@ Avoids non-cohort results.
 
 ## Security Note
 
-The MCP server reads your O'Reilly session from the browser — no credentials are stored in this repo or passed through environment variables. Don't hardcode any tokens or cookies in `settings.json`.
+Your O'Reilly API token lives in your local Claude Code MCP registration (the `ORM_JWT` env var passed to `claude mcp add`) — it is never stored in this repo. Don't hardcode tokens in any committed file.

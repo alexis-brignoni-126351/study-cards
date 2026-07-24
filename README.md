@@ -4,6 +4,8 @@ Spaced repetition + active recall system for technical learning. Built for the A
 
 **Core engine + optional modules.** Use as-is or extend with your own sources, formats, and organization.
 
+![Demo of a /study drill session](demo.gif)
+
 ---
 
 ## What This Is
@@ -45,7 +47,7 @@ Everyone in the cohort comes from a different job function and has different amb
    git clone https://github.com/alexis-brignoni-126351/study-cards.git
    cd study-cards
    ```
-   Configure O'Reilly MCP in `.claude/settings.json` (already included) and log in to O'Reilly in your browser. See [SETUP.md](SETUP.md).
+   Then install the O'Reilly MCP server (needs your O'Reilly API token). See [SETUP.md](SETUP.md).
 
 2. **Set up your learner profile**
    ```bash
@@ -143,7 +145,7 @@ After completing a session or chapter, run:
 
 The system:
 1. Reads your session note
-2. Pulls assigned O'Reilly chapter content (full text via `oreilly-read` MCP)
+2. Pulls assigned O'Reilly chapter content (full text via the O'Reilly MCP)
 3. Reviews against the **Card Inclusion Bar** (mental models, failure modes, decision frameworks)
 4. Cross-checks existing cards
 5. Shows gaps and offers to create cards
@@ -192,7 +194,7 @@ Not everything deserves a card. Only concepts that build engineering judgment:
 ## Tech Stack
 
 - **Claude Code** - skill framework + interactive tutor
-- **O'Reilly Read MCP** - full chapter text from O'Reilly books ([barclayneira/oreilly-mcp](https://github.com/barclayneira/oreilly-mcp))
+- **O'Reilly MCP** - catalog search + full chapter text from O'Reilly books ([barclayneira/oreilly-mcp](https://github.com/barclayneira/oreilly-mcp))
 - **Markdown files** - cards are plain text, no database
 - **Optional: Obsidian** - for wikilink navigation and graph view
 
@@ -265,8 +267,8 @@ Think of chunking like cutting up a textbook for search...
 
 **Prerequisites:**
 - Claude Code CLI
-- Node.js 18+
-- O'Reilly account (Nelnet corporate access)
+- [uv](https://docs.astral.sh/uv/) (runs the O'Reilly MCP server)
+- O'Reilly account (corporate or personal subscription)
 
 **Steps:**
 
@@ -276,21 +278,9 @@ Think of chunking like cutting up a textbook for search...
    cd study-cards
    ```
 
-2. Configure O'Reilly MCP in `.claude/settings.json` (already included in the repo):
-   ```json
-   {
-     "mcpServers": {
-       "oreilly-read": {
-         "command": "npx",
-         "args": ["-y", "@barclayneira/oreilly-mcp"]
-       }
-     }
-   }
-   ```
+2. Install the [O'Reilly MCP server](https://github.com/barclayneira/oreilly-mcp) and register it with Claude Code using your O'Reilly API token (from [learning.oreilly.com/apidocs/mcp/content](https://learning.oreilly.com/apidocs/mcp/content/)) — full walkthrough in [SETUP.md](SETUP.md).
 
-3. Log in to O'Reilly in your browser — the MCP picks up your session automatically, no extra steps needed.
-
-4. Test:
+3. Test:
    ```bash
    claude
    /study status

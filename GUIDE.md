@@ -139,7 +139,7 @@ This finds concepts in your session material that cross the Card Inclusion Bar b
 
 1. Reads your session note (from `study/sessions/`)
 2. Reads the session's Coverage Map to see what's already covered
-3. Pulls assigned O'Reilly chapter content (via `oreilly-read` MCP)
+3. Pulls assigned O'Reilly chapter content (via the O'Reilly MCP)
 4. Reviews everything against the **Card Inclusion Bar**:
    - **Include:** Mental models, failure modes, decision frameworks, non-obvious mechanics, production so-whats
    - **Exclude:** History, trivia, vocab-only, program meta
@@ -299,7 +299,7 @@ Use this when you want to go deeper on a topic beyond what the session covered.
 1. Searches O'Reilly catalog for the topic (entire catalog or filtered books)
 2. Shows matching chapters
 3. You select which chapter to read
-4. Pulls full chapter text (via `oreilly-read` MCP)
+4. Pulls full chapter text (via the O'Reilly MCP)
 5. Displays content (or saves to `study/deep-dives/`)
 6. Asks if any concepts are worth cardifying
 7. Creates cards if you say yes
@@ -741,8 +741,8 @@ Ensures you're ready for new material.
 ### `/study audit` can't find O'Reilly chapters
 
 **Fix:**
-- Verify O'Reilly Read MCP is configured in `.claude/settings.json` (see SETUP.md)
-- Make sure you're logged in to O'Reilly in your browser
+- Verify the O'Reilly MCP server is registered: `claude mcp list` should show `oreilly` (see SETUP.md)
+- Make sure your O'Reilly API token is still valid (refresh it if chapters stopped loading)
 - Try searching manually: "Can you search O'Reilly for X?"
 
 ### Coverage Map out of sync

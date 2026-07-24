@@ -8,7 +8,7 @@ Complete installation and configuration for Study Cards.
 
 - **Claude Code CLI** installed and authenticated
 - **O'Reilly account** (corporate or personal subscription)
-- **Node.js** 18+ (for O'Reilly MCP server)
+- **[uv](https://docs.astral.sh/uv/)** (runs the O'Reilly MCP server, which is Python-based)
 - **Git** (for cloning this repo)
 
 **Optional:**
@@ -19,7 +19,7 @@ Complete installation and configuration for Study Cards.
 ## Quick Start (3 steps)
 
 1. Clone this repo and navigate into it
-2. Install and configure O'Reilly Read MCP server
+2. Install and register the O'Reilly MCP server
 3. Initialize your study directory
 
 **Time:** 10-15 minutes
@@ -35,41 +35,31 @@ cd study-cards
 
 ---
 
-## Step 2: Configure O'Reilly MCP Servers
+## Step 2: Install the O'Reilly MCP Server
 
-**This is required for `/study audit` and `/study deep` to work.** The O'Reilly MCP servers pull full chapter text from O'Reilly books. No manual installation needed — Claude Code downloads and runs them automatically via `npx`.
+**This is required for `/study audit` and `/study deep` to work.** The [O'Reilly MCP server](https://github.com/barclayneira/oreilly-mcp) searches the catalog and pulls full chapter text from O'Reilly books.
 
-### Configure in Claude Code
-
-The repo already includes the config at `.claude/settings.json`. If you want it globally (available in all projects), copy the MCP block to `~/.claude/settings.json`:
-
-```json
-{
-  "mcpServers": {
-    "oreilly-read": {
-      "command": "npx",
-      "args": ["-y", "@barclayneira/oreilly-mcp"],
-      "description": "O'Reilly full chapter text reader"
-    },
-    "oreilly": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-oreilly"],
-      "description": "O'Reilly official search (fallback)"
-    }
-  }
-}
-```
-
-**Why two servers?**
-- `oreilly-read` (primary) - pulls full chapter text (required for audit/deep-dive)
-- `oreilly` (official, fallback) - search and discovery only
-
-### Authenticate O'Reilly
-
-Just be logged in to O'Reilly in your browser. The MCP server picks up your session automatically — no cookie extraction or environment variables needed.
+### Get your O'Reilly API token
 
 1. Log in to https://learning.oreilly.com/ in your browser
-2. That's it
+2. Copy your token from https://learning.oreilly.com/apidocs/mcp/content/
+
+### Install and register with Claude Code
+
+Clone the server somewhere outside this repo, install its dependencies, and register it at user scope (available in all your projects):
+
+```bash
+git clone https://github.com/barclayneira/oreilly-mcp.git
+cd oreilly-mcp
+uv sync
+
+claude mcp add oreilly \
+  -s user \
+  -e ORM_JWT=YOUR_TOKEN_HERE \
+  -- "$(pwd)/.venv/bin/python" "$(pwd)/stdio_server.py"
+```
+
+The server provides `search_content` (catalog search), `get_book_info`, `get_table_of_contents`, and `read_chapter` (full chapter text) — everything `/study audit` and `/study deep` need.
 
 ### Test the connection
 
@@ -87,8 +77,8 @@ Can you search O'Reilly for "Managing AI Projects"?
 If the server is working, Claude will find and list matching books/chapters.
 
 **Troubleshooting:**
-- If you get "MCP server not available": check `.claude/settings.json` syntax and restart Claude Code
-- If chapters won't load: make sure you're logged in to O'Reilly in your browser
+- If you get "MCP server not available": run `claude mcp list` to verify `oreilly` is registered, then restart Claude Code
+- If chapters won't load: your token may have expired — grab a fresh one from the apidocs page and re-register the server
 
 ---
 
@@ -118,13 +108,9 @@ If you want to use a different location:
 
 ---
 
-## Step 4: Copy Study Index Template
+## Step 4: Customize Your Study Index
 
-Initialize your Study Index from the template:
-
-```bash
-cp templates/study-index-template.md study/Study\ Index.md
-```
+The repo ships a ready-to-use Study Index at `study/Study Index.md` (a fresh copy of the template is in `templates/study-index-template.md` if you ever want to start over).
 
 Edit `study/Study Index.md` and customize:
 - Prerequisites Map (which sessions require which concepts)
@@ -187,24 +173,10 @@ If you use Obsidian, you can open this directory as a vault for better linking a
 
 ### Install Obsidian MCP (optional)
 
-This lets Claude Code read/write to your Obsidian vault directly.
+This lets Claude Code read/write to your Obsidian vault directly. Requires Node.js 18+.
 
 ```bash
-npm install -g obsidian-mcp
-```
-
-Add to `.claude/settings.json`:
-
-```json
-{
-  "mcpServers": {
-    "obsidian": {
-      "command": "npx",
-      "args": ["-y", "obsidian-mcp", "/path/to/study-cards"],
-      "description": "Obsidian vault integration"
-    }
-  }
-}
+claude mcp add obsidian -s user -- npx -y obsidian-mcp /path/to/study-cards
 ```
 
 **Benefits:**
@@ -223,7 +195,7 @@ After setup, your directory looks like this:
 ```
 study-cards/
 ├── .claude/
-│   ├── settings.json              # O'Reilly MCP config
+│   ├── settings.json              # Optional skill settings (e.g. custom studyDir)
 │   └── skills/study/
 │       └── skill.md               # The /study skill
 │
@@ -255,8 +227,8 @@ study-cards/
 
 Before your first real study session, verify:
 
-- [ ] O'Reilly MCP servers configured in `.claude/settings.json`
-- [ ] Logged in to O'Reilly in your browser
+- [ ] O'Reilly MCP server registered (`claude mcp list` shows `oreilly`)
+- [ ] O'Reilly API token set (the `ORM_JWT` value passed to `claude mcp add`)
 - [ ] Claude Code can search O'Reilly (test in a session)
 - [ ] `/study status` runs without errors
 - [ ] `/study drill --limit 1` runs interactive tutor
@@ -268,13 +240,13 @@ If all checks pass, you're ready to start building your card library.
 
 ## Common Issues
 
-### "MCP server oreilly-read not available"
+### "MCP server oreilly not available"
 
-**Fix:** Check `.claude/settings.json` syntax. Make sure the server config is valid JSON. Restart Claude Code session.
+**Fix:** Run `claude mcp list` and confirm `oreilly` is registered and healthy. If missing, re-run the `claude mcp add` command from Step 2. Restart Claude Code session.
 
 ### "Authentication failed" when pulling chapters
 
-**Fix:** Log out and back in to O'Reilly in your browser, then restart your Claude Code session.
+**Fix:** Your O'Reilly API token likely expired. Get a fresh one from https://learning.oreilly.com/apidocs/mcp/content/ and re-register the server with the new `ORM_JWT` value.
 
 ### Cards not showing up in `/study due`
 

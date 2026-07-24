@@ -171,8 +171,8 @@ Coverage audit: find concepts in completed session material that cross the Card 
 2. Read session's Coverage Map to see what's already mapped
 3. Identify assigned O'Reilly readings from session note (look for book chapter references)
 4. **Pull O'Reilly chapter content:**
-   - Use `oreilly-read` MCP's `read_chapter` tool (primary method)
-   - Fallback: use `oreilly` discovery + prompt user to read chapter, paste content
+   - Use the O'Reilly MCP's `read_chapter` tool (primary method)
+   - Fallback: locate the chapter with `search_content`, share the URL, prompt user to read chapter and paste content
 5. Review session content + O'Reilly content against **Card Inclusion Bar**:
    - ✓ Mental models, failure modes, decision frameworks, non-obvious mechanics, production so-whats
    - ✗ History, trivia, vocab-only, program meta
@@ -198,7 +198,7 @@ Coverage audit: find concepts in completed session material that cross the Card 
 ```
 /study audit session-1
 → Reads Session 1 note + Coverage Map
-→ Pulls assigned O'Reilly chapters via oreilly-read MCP
+→ Pulls assigned O'Reilly chapters via the O'Reilly MCP
 → Finds 2 gaps: Overfitting Diagnostics, Train/Val/Test Split
 → Confirms with user
 → Creates 2 cards (V1.0, mastery: new)
@@ -282,11 +282,11 @@ Deep-dive on a topic using O'Reilly content. Pull chapter text, surface related 
    - Read `.claude/study-config.json` if exists (get `oreilly_books` array)
    - Or use `--books` flag value
    - If neither, search entire catalog
-2. Search O'Reilly catalog via `oreilly` MCP: `search_oreilly_content`
+2. Search O'Reilly catalog via the O'Reilly MCP: `search_content`
    - Filter results to configured books if specified
 3. Show matching chapters with descriptions
 4. User selects which to read
-5. Pull full chapter content via `oreilly-read` MCP: `read_chapter`
+5. Pull full chapter content via the O'Reilly MCP: `read_chapter`
 6. Display content (or save to `study/deep-dives/<topic>-<date>.md`)
 7. Ask: "Did this reveal any concepts worth cardifying?"
 8. If yes: mini-audit against Card Inclusion Bar, create cards (V1.0, mastery: new)
@@ -587,18 +587,17 @@ status: active | retired       # active by default
 
 ## O'Reilly MCP Integration
 
-**Required MCP servers:**
+**Required MCP server:**
 
-1. **`oreilly-read`** (primary) - full chapter text
-   - Repository: `barclayneira/oreilly-mcp`
-   - Tool: `read_chapter` (returns actual chapter content)
-   - **Critical for `/study audit` and `/study deep` to work**
+**`oreilly`** - Repository: `barclayneira/oreilly-mcp`
+- `search_content` - catalog search (books, chapters, articles)
+- `get_book_info` / `get_table_of_contents` - book metadata and chapter lists
+- `read_chapter` - full chapter text
+- **Critical for `/study audit` and `/study deep` to work**
 
-2. **`oreilly`** (official, fallback) - discovery only
-   - Tool: `search_oreilly_content` (returns metadata + URL)
-   - Use when oreilly-read unavailable
+If the server is unavailable, fall back to the manual workflow: share the chapter URL and ask the user to paste key content.
 
-**Setup:** See SETUP.md for complete O'Reilly Read MCP installation and configuration.
+**Setup:** See SETUP.md for installation and authentication (O'Reilly API token).
 
 ---
 
